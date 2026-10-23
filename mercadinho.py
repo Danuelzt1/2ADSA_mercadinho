@@ -1,5 +1,6 @@
 import random
 
+print("Bem vindo a loja PYMarket!")
 #Lista com uma sequencia de dicionarios para armazenar os produtos, com seu preço e quantidade
 produtos = [
     {"nome": "Arroz", "preco": 25.90, "quantidade": random.randint(0,10)},
@@ -24,6 +25,37 @@ produtos = [
     {"nome": "Azeite de Oliva", "preco": 34.90, "quantidade": random.randint(0,10)}
 ]
 
+produtos_cliente = []
+
 for produto in produtos:
     print(f'{produto["nome"]} {produto["preco"]:.2f} {produto["quantidade"]}')
     print()
+
+for produto in produtos:
+    print(f'{produto["nome"]} {produto["preco"]:.2f} {produto["quantidade"]}') # Mostra a lista de produtos.
+    
+qtd_compras = int(input("Quantos produtos você irá comprar? \n"))
+if qtd_compras > 0 and qtd_compras <= 20:
+    contador = 0
+    while contador < qtd_compras:
+        
+        produto_nome = input("Qual produto você deseja comprar? \n").lower()
+        produto_quantidade = int(input("Quantos desse produto você irá comprar? \n"))
+        
+        for produto in produtos:
+            if produto["nome"].lower() == produto_nome:
+                if produto["quantidade"] >= produto_quantidade:
+                    produtos_cliente.append({ #cria o dicionário para armazenar os produtos e a quantidade desejada pelo usuário.
+                        "nome": produto_nome,
+                        "quantidade": produto_quantidade
+                        })
+                    contador =+ 1
+                else:
+                    print("O estoque não possui esta quantidade!")                   
+                    break
+            else:
+                print("Não existe produto com esse nome!")
+                break
+        print(produtos_cliente)        
+else:
+    print("Quantidade inválida! Digite novamente.")
