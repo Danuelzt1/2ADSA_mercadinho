@@ -76,8 +76,30 @@ for item in produtos_cliente:
         if produto["nome"] == item["nome"]:
             subtotal_produto = produto["preco"] * item["quantidade"]
             subtotal += subtotal_produto
-
-            print(f'{item["nome"]} - {item["quantidade"]} unidades'f'x R$ {produto["preco"]:.2f} = R$ {subtotal_produto:.2f}') #Mostra o nome dos produtos, as unidades e o subtotal.
+            #Mostra o nome dos produtos, as unidades e o subtotal.
+            print(f'{item["nome"]} - {item["quantidade"]} unidades'f'x R$ {produto["preco"]:.2f} = R$ {subtotal_produto:.2f}') 
             break
 
 print(f"\nSubtotal: R$ {subtotal:.2f}")
+
+# Escolha da forma de pagamento
+while True:
+    pagamento = input("\nForma de pagamento (dinheiro, pix ou cartão): ").strip().lower() #.strip() serve para remover espaços em branco do inicio ao final de uma string.
+
+    if pagamento in ["dinheiro", "pix", "cartão", "cartao"]:
+        break
+    print("Forma de pagamento inválida!")
+
+# Cálculo do desconto
+desconto = 0
+
+if pagamento in ["dinheiro", "pix"]:
+    if subtotal >= 200:
+        desconto = subtotal * 0.10
+    elif subtotal >= 100:
+        desconto = subtotal * 0.05
+
+valor_final = subtotal - desconto
+
+print(f"Desconto: R$ {desconto:.2f}")
+print(f"Valor final: R$ {valor_final:.2f}")
