@@ -103,3 +103,34 @@ valor_final = subtotal - desconto
 
 print(f"Desconto: R$ {desconto:.2f}")
 print(f"Valor final: R$ {valor_final:.2f}")
+
+
+# Pagamento em dinheiro e cálculo do troco
+troco = 0
+valor_recebido = None
+
+if pagamento == "dinheiro":
+    while True:
+        valor_recebido = float(
+            input("Valor recebido: R$ ")
+        )
+
+        if valor_recebido >= valor_final:
+            troco = valor_recebido - valor_final
+            break
+
+        print("Valor insuficiente! Tente novamente.")
+
+    print(f"Troco: R$ {troco:.2f}")
+
+venda_concluida = {
+    "produtos": produtos_cliente.copy(), #cria uma cópia superficial dos dados presentes na lista produtos_clientes para não adicionar ou remover produtos direto da  lista produtos_clientes
+    "subtotal": subtotal,
+    "desconto": desconto,
+    "valor_final": valor_final,
+    "pagamento": pagamento,
+    "valor_recebido": valor_recebido,
+    "troco": f"{troco:.2f}"
+}
+
+print("\nVenda Concluida")
