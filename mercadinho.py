@@ -66,4 +66,18 @@ while True:
     if resposta == "não" or resposta == "nao":
         break
     
-print("Conta finalizada!")
+subtotal = 0
+# Resumo da Compra.
+print("\nResumo Da Compra:")
+
+for item in produtos_cliente:
+    for produto in produtos:
+        #Calcula o subtotal da compra.
+        if produto["nome"] == item["nome"]:
+            subtotal_produto = produto["preco"] * item["quantidade"]
+            subtotal += subtotal_produto
+
+            print(f'{item["nome"]} - {item["quantidade"]} unidades'f'x R$ {produto["preco"]:.2f} = R$ {subtotal_produto:.2f}') #Mostra o nome dos produtos, as unidades e o subtotal.
+            break
+
+print(f"\nSubtotal: R$ {subtotal:.2f}")
