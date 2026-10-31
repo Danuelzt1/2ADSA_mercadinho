@@ -1,7 +1,7 @@
 import random
 
 print("Bem vindo a loja PYMarket!")
-#Lista com uma sequencia de dicionarios para armazenar os produtos, com seu preço e quantidade
+
 produtos = [
     {"nome": "Arroz", "preco": 25.90, "quantidade": random.randint(0,10)},
     {"nome": "Feijão", "preco": 8.50, "quantidade": random.randint(0,10)},
@@ -25,112 +25,159 @@ produtos = [
     {"nome": "Azeite de Oliva", "preco": 34.90, "quantidade": random.randint(0,10)}
 ]
 
-produtos_cliente = []
+vendas = []
 
 while True:
+  print("\n===== MENU =====")
+  print("1 - Registrar venda")
+  print("2 - Fechar caixa")
+  opcaoMenu = input("O que deseja fazer? ")
 
-    for produto in produtos:
-        print(f'{produto["nome"]} {produto["preco"]:.2f} {produto["quantidade"]}')
+  if opcaoMenu == "1":
+    produtosCarrinho = []
 
-    qtd_compras = int(input("Quantos produtos você irá comprar? \n"))
-
-    if qtd_compras > 0 and qtd_compras <= 20:
-        contador = 0
-
-        while contador < qtd_compras: # while da lógica de armazenamento de produtos pedidos pelo usuário.
-
-            produto_nome = input("Qual produto você deseja comprar? \n").lower()
-            produto_quantidade = int(input("Quantos desse produto você irá comprar? \n"))
-            encontrado = False
-
-            for produto in produtos:
-                #Comparação entre as escolhas do usuário com os produtos armazenados no sistema.
-                if produto["nome"].lower() == produto_nome:
-                    encontrado = True
-                    if 0 < produto_quantidade and produto_quantidade <= produto["quantidade"]:
-                        produtos_cliente.append({ #cria o dicionário para armazenar os produtos e a quantidade desejada pelo usuário.
-                            "nome": produto["nome"],
-                            "quantidade": produto_quantidade
-                        })
-                        produto["quantidade"] -= produto_quantidade
-                        contador += 1
-                    else:
-                       print("O estoque não possui esta quantidade!")
-                    break
-            if not encontrado: # Caso o produto digitado não seja encontrado, será apresentado esta mensagem.
-                print("Não existe produto com esse nome!")
-    else:
-        print("Quantidade inválida! Digite novamente.")
-
-    resposta = input("Deseja comprar mais alguma coisa? (sim/não) \n").lower()
-    if resposta == "não" or resposta == "nao":
-        break
-    
-subtotal = 0
-# Resumo da Compra.
-print("\nResumo Da Compra:")
-
-for item in produtos_cliente:
-    for produto in produtos:
-        #Calcula o subtotal da compra.
-        if produto["nome"] == item["nome"]:
-            subtotal_produto = produto["preco"] * item["quantidade"]
-            subtotal += subtotal_produto
-            #Mostra o nome dos produtos, as unidades e o subtotal.
-            print(f'{item["nome"]} - {item["quantidade"]} unidades'f'x R$ {produto["preco"]:.2f} = R$ {subtotal_produto:.2f}') 
-            break
-
-print(f"\nSubtotal: R$ {subtotal:.2f}")
-
-# Escolha da forma de pagamento
-while True:
-    pagamento = input("\nForma de pagamento (dinheiro, pix ou cartão): ").strip().lower() #.strip() serve para remover espaços em branco do inicio ao final de uma string.
-
-    if pagamento in ["dinheiro", "pix", "cartão", "cartao"]:
-        break
-    print("Forma de pagamento inválida!")
-
-# Cálculo do desconto
-desconto = 0
-
-if pagamento in ["dinheiro", "pix"]:
-    if subtotal >= 200:
-        desconto = subtotal * 0.10
-    elif subtotal >= 100:
-        desconto = subtotal * 0.05
-
-valor_final = subtotal - desconto
-
-print(f"Desconto: R$ {desconto:.2f}")
-print(f"Valor final: R$ {valor_final:.2f}")
-
-
-# Pagamento em dinheiro e cálculo do troco
-troco = 0
-valor_recebido = None
-
-if pagamento == "dinheiro":
     while True:
-        valor_recebido = float(
-            input("Valor recebido: R$ ")
-        )
+        print("\nProdutos disponíveis:")
+        for produto in produtos:
+            print(f'{produto["nome"]} - R$ {produto["preco"]:.2f} - Estoque: {produto["quantidade"]}')
 
-        if valor_recebido >= valor_final:
-            troco = valor_recebido - valor_final
+        produtoNome = input("\nQual produto você deseja comprar? ").lower()
+        produtoQuantidade = int(input("Quantas unidades? "))
+        produtoEncontrado = False
+        for produto in produtos:
+            if produtoNome == produto["nome"].lower():
+                produtoEncontrado = True
+                if produtoQuantidade <= 0:
+                    print("\nQuantidade inválida! Digite um número maior que zero.")
+                elif produto["quantidade"] >= produtoQuantidade:
+                    produtosCarrinho.append({
+                        "nome": produto["nome"],
+                        "quantidade": produtoQuantidade
+                    })
+                    produto["quantidade"] -= produtoQuantidade
+                    print("Produto adicionado ao carrinho.")
+                else:
+                    print(f"\nDesculpe, estoque insuficiente. Temos apenas {produto['quantidade']} em estoque.")
+                break
+        if not produtoEncontrado:
+            print("\nEsse produto não existe em nossa loja.")
+
+        if len(produtosCarrinho) == 20:
+            print("Limite de 20 itens atingido!")
             break
 
-        print("Valor insuficiente! Tente novamente.")
+        opcaoAdicionar = input("Deseja adicionar outro produto? s/n ").lower()
+        if opcaoAdicionar == "n":
+            break
+    if len(produtosCarrinho) == 0:
+        print("Nenhum produto foi adicionado. Venda cancelada.")
+        continue
 
-    print(f"Troco: R$ {troco:.2f}")
+    subtotal = 0
+    print("\nResumo Da Compra:")
 
-venda_concluida = {
-    "produtos": produtos_cliente.copy(), #cria uma cópia superficial dos dados presentes na lista produtos_clientes para não adicionar ou remover produtos direto da  lista produtos_clientes
-    "subtotal": subtotal,
-    "desconto": desconto,
-    "valor_final": valor_final,
-    "pagamento": pagamento,
-    "valor_recebido": valor_recebido,
-    "troco": f"{troco:.2f}"
-}
+    for item in produtosCarrinho:
+        for produto in produtos:
+            if produto["nome"] == item["nome"]:
+                subtotal_produto = produto["preco"] * item["quantidade"]
+                subtotal += subtotal_produto
 
-print("\nVenda Concluida")
+                print(f'{item["nome"]} - {item["quantidade"]} unidades x R$ {produto["preco"]:.2f} = R$ {subtotal_produto:.2f}')
+                break
+
+    print(f"\nSubtotal: R$ {subtotal:.2f}")
+
+    while True:
+        print("\nQual a forma de pagamento? (Selecione o dígito)")
+        opcaoPagamento = input("1 - Dinheiro, 2 - Pix, 3 - Cartão \n")
+
+        if opcaoPagamento == "1":
+            formaPagamento = "dinheiro"
+            break
+        elif opcaoPagamento == "2":
+            formaPagamento = "pix"
+            break
+        elif opcaoPagamento == "3":
+            formaPagamento = "cartao"
+            break
+        else:
+            print("Opção inválida! Digite 1, 2 ou 3.")
+
+    desconto = 0
+
+    if formaPagamento == "dinheiro" or formaPagamento == "pix":
+        if subtotal >= 200:
+            desconto = subtotal * 0.10
+        elif subtotal >= 100:
+            desconto = subtotal * 0.05
+
+    valorFinal = subtotal - desconto
+
+    print(f"Desconto: R$ {desconto:.2f}")
+    print(f"Valor final: R$ {valorFinal:.2f}")
+
+    troco = 0
+    valorRecebido = None
+
+    if formaPagamento == "dinheiro":
+        while True:
+            valorRecebido = float(input("Valor recebido: R$ "))
+
+            if valorRecebido >= valorFinal:
+                troco = valorRecebido - valorFinal
+                break
+
+            print("Valor insuficiente! Tente novamente.")
+
+        print(f"Troco: R$ {troco:.2f}")
+
+    vendas.append({
+        "produtos": produtosCarrinho.copy(),
+        "subtotal": subtotal,
+        "desconto": desconto,
+        "valorFinal": valorFinal,
+        "pagamento": formaPagamento,
+        "valorRecebido": valorRecebido,
+        "troco": troco
+    })
+
+    print("\nVenda concluída!")
+
+  elif opcaoMenu == "2":
+      break
+  else:
+      print("Opção inválida! Digite 1 ou 2.")
+
+quantidadeVendas = len(vendas)
+faturamento = 0
+maiorVenda = 0
+qtdDinheiro = 0
+qtdPix = 0
+qtdCartao = 0
+
+for venda in vendas:
+    faturamento += venda["valorFinal"]
+
+    if venda["valorFinal"] > maiorVenda:
+        maiorVenda = venda["valorFinal"]
+
+    if venda["pagamento"] == "dinheiro":
+        qtdDinheiro += 1
+    elif venda["pagamento"] == "pix":
+        qtdPix += 1
+    else:
+        qtdCartao += 1
+
+if quantidadeVendas > 0:
+    ticketMedio = faturamento / quantidadeVendas
+else:
+    ticketMedio = 0
+
+print("\n===== FECHAMENTO DO CAIXA =====")
+print(f"Quantidade de vendas: {quantidadeVendas}")
+print(f"Faturamento: R$ {faturamento:.2f}")
+print(f"Ticket médio: R$ {ticketMedio:.2f}")
+print(f"Maior venda: R$ {maiorVenda:.2f}")
+print(f"Vendas em dinheiro: {qtdDinheiro}")
+print(f"Vendas no Pix: {qtdPix}")
+print(f"Vendas no cartão: {qtdCartao}")
